@@ -1,0 +1,74 @@
+import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+
+/**
+ * Write a description of class Enemy here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+public class Enemy extends Actor
+{
+    int move = 2;
+    int deltaX;
+    int deltaY;
+    boolean isInAir;
+    final int gravity = 1;
+    /**
+     * Act - do whatever the Enemy wants to do. This method is called whenever
+     * the 'Act' or 'Run' button gets pressed in the environment.
+     */
+    public void act() 
+    {
+        // Add your action code here.
+        deltaX = move;
+        setLocation(getX() + deltaX, getY() + deltaY);
+        applyGravity();
+        if(isTouching(Player.class))
+        {
+            Greenfoot.stop();
+        }
+    }    
+    public void applyGravity()
+    {
+        // Height of the character, which is just height of current image.
+        int height = getImage().getHeight();
+        
+        // Get platform touching the BOTTOM of the character, if any.
+        Actor platform = getOneObjectAtOffset(0, height / 2, Platform.class);
+        if (platform != null)   // if indeed there is platform touching the bottom of the character.
+        {
+            deltaY = 0;     // Don't apply gravity.
+            isInAir = false;
+            
+            moveOnTopOfObject(platform);    // Adjust position to just touching platform.
+        }
+        else    // No platform below.
+        {
+            deltaY = deltaY + gravity;  // Apply gravity.
+            isInAir = true;
+            getImage().mirrorHorizontally();
+            if(move == 2)
+            {
+                move = -2;
+            }
+            else if(move == -2)
+            {
+                move = 2;
+            }
+        }
+    }
+    /**
+     * Adjusts character position so that its bottom edge is just touching the top edge of the specified object.
+     * Used to move character to just above a platform that it's touching.
+     */
+    public void moveOnTopOfObject(Actor object)
+    {
+        int height = getImage().getHeight();
+        int objectHeight = object.getImage().getHeight();
+        
+        // Adjust character position so that its bottom edge is just touching top edge of object.
+        setLocation(getX(), object.getY() - objectHeight / 2 - height / 2 + 1); // Plus 1 to make character sink into object by 1 pixel.
+        
+
+    }
+}
